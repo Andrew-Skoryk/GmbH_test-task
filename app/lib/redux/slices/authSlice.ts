@@ -63,6 +63,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isAuthenticated = true;
         state.username = action.payload.username;
+        window.location.href = "/table"
       })
       .addCase(loginAsync.rejected, (state, action) => {
         state.isLoading = false;
