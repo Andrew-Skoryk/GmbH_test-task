@@ -22,8 +22,10 @@ export const fetchData = createAsyncThunk("table/fetchData", async () => {
 export const updateData = createAsyncThunk(
   "table/updateData",
   async (updatedRow: TableData) => {
+    console.log("Payload:", updatedRow);
     const response = await api.put(`table/${updatedRow.id}/`, updatedRow);
 
+    
     return response.data;
   }
 );
@@ -49,7 +51,7 @@ const tableSlice = createSlice({
       })
 
     // Update Data
-      .addCase(updateData.pending, (state) => {
+      .addCase(updateData.pending, (_state) => {
         // Handle pending state if needed
       })
       .addCase(updateData.fulfilled, (state, action) => {

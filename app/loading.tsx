@@ -2,14 +2,9 @@ import { Spinner } from "@nextui-org/spinner";
 
 function Loading() {
   return (
-    <Spinner
-      classNames={{
-        base: "h-52",
-        wrapper: "mb-3",
-      }}
-      label="Loading..."
-      size="lg"
-    />
+    <main className="flex items-center justify-center h-full min-h-screen">
+      <Spinner label="Loading..." size="lg" />
+    </main>
   );
 }
 

@@ -6,6 +6,7 @@ import { AppDispatch, RootState } from "../lib/redux/store";
 import { fetchData } from "../lib/redux/slices/tableSlice";
 
 import { Spinner } from "@nextui-org/spinner";
+import { Pagination } from "@nextui-org/pagination";
 import DataTable from "./DataTable";
 
 function DataFetcher() {
@@ -27,7 +28,21 @@ function DataFetcher() {
     return <div>An error occurred while loading data :(</div>;
   }
 
-  return <DataTable data={tableData.results} />;
+  return (
+    <div className="flex flex-col items-center self-start flex-grow space-y-6">
+      <h1 className="text-2xl font-semibold">Table Data</h1>
+      <DataTable data={tableData.results} />
+
+      <Pagination
+        total={41}
+        initialPage={1}
+        showControls
+        variant="faded"
+        size="lg"
+        showShadow
+      />
+    </div>
+  );
 }
 
 export default DataFetcher;
