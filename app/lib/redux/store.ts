@@ -1,9 +1,11 @@
-import { AnyAction, ThunkDispatch, configureStore } from '@reduxjs/toolkit';
-import authReducer from './slices/authSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import authReducer from "./slices/authSlice";
+import tableReducer from "./slices/tableSlice";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    table: tableReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -12,5 +14,5 @@ export const store = configureStore({
     }),
 });
 
-export type AppDispatch = ThunkDispatch<RootState, unknown, AnyAction>;
+export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;

@@ -1,11 +1,12 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { AxiosError } from 'axios';
+import api from '../../../api/api';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Types
-interface AuthState {
-  username: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  error: string | null;
+type AuthState = {
+  username: string | null,
+  isAuthenticated: boolean,
+  isLoading: boolean,
+  error: string | null,
 }
 
 const initialState: AuthState = {
@@ -15,32 +16,43 @@ const initialState: AuthState = {
   error: null,
 };
 
-// Async logic
-export const loginAsync = createAsyncThunk(
-  'auth/login',
-  async ({ username, password }: { username: string; password: string }) => {
-    const response = await fetch('/your-login-endpoint', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username, password }),
-    });
+export const loginAsync = createAsyncThunk<
+  { username: string },
+  { username: string; password: string },
+  { rejectValue: string }
+>('auth/login', async ({ username, password }, thunkAPI) => {
+  try {
+    const response = await api.post("login/", { username, password });
 
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.message || 'Could not login.');
+    return { username: response.data.username };
+  } catch (error: any) {
+    const axiosError = error as AxiosError;
+    let errorMessage = "An error occurred. Please try again.";
+
+    if (axiosError.response) {
+      switch (axiosError.response.status) {
+        case 401:
+          errorMessage = "Invalid username or password.";
+          break;
+        case 403:
+          errorMessage = "Your account has been blocked. Please contact support.";
+          break;
+        case 500:
+          errorMessage = "Server error. Please try again later.";
+          break;
+        default:
+          errorMessage = "An unexpected error occurred. Please try again.";
+      }
     }
 
-    return response.json();
+    return thunkAPI.rejectWithValue(errorMessage);
   }
-);
+});
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(loginAsync.pending, (state) => {
@@ -54,7 +66,7 @@ const authSlice = createSlice({
       })
       .addCase(loginAsync.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.error.message || null;
+         state.error = action.payload || "An unexpected error occurred. Please try again.";
       });
   },
 });
