@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { setCookie } from "nookies";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useForm } from "react-hook-form";
 
 import { loginAsync } from "../lib/redux/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,6 +12,7 @@ import { AppDispatch, RootState } from "../lib/redux/store";
 
 import { Eye, EyeOff } from "lucide-react";
 import { Button, Input } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
   username: z
@@ -35,6 +37,7 @@ function LoginForm() {
   const [isVisible, setIsVisible] = useState(false);
 
   const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
   const isLoading = useSelector((state: RootState) => state.auth.isLoading);
   const loginError = useSelector((state: RootState) => state.auth.error);
 
@@ -48,8 +51,19 @@ function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (values: LoginFormInput) => {
-    dispatch(loginAsync(values));
+  const onSubmit = async (values: LoginFormInput) => {
+    try {
+      const response = await dispatch(loginAsync(values)).unwrap();
+      if (response) {
+        setCookie(null, "isAuthenticated", "true", {
+          maxAge: 60 * 60, // 1 hr
+          path: "/",
+        });
+        router.push("/table");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
   };
 
   return (

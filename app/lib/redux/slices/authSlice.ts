@@ -63,11 +63,11 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isAuthenticated = true;
         state.username = action.payload.username;
-        window.location.href = "/table"
+
       })
       .addCase(loginAsync.rejected, (state, action) => {
         state.isLoading = false;
-         state.error = action.payload || "An unexpected error occurred. Please try again.";
+        state.error = action.payload || "An unexpected error occurred. Please try again.";
       });
   },
 });

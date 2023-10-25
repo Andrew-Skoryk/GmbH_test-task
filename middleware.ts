@@ -1,22 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { store } from './app/lib/redux/store';
+import { parse } from 'cookie';
 
 export default function middleware(request: NextRequest) {
-  const state = store.getState();
-  const currentPath = request.nextUrl.pathname;
+  const cookies = parse(request.headers.get('cookie') || '');
 
-  if (!state.auth.isAuthenticated) {
-    if (currentPath !== "/") {
-      return NextResponse.redirect('https://gmbh-test-task.vercel.app/');
-    }
-  } else {
-    if (currentPath !== "/table") {
-      return NextResponse.redirect('https://gmbh-test-task.vercel.app/table');
-    }
+  if (!cookies.isAuthenticated || cookies.isAuthenticated !== 'true') {
+    return NextResponse.rewrite(new URL('/', request.url));
   }
 
   return NextResponse.next();
 }
+
+
+
 
 export const config = {
   matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
