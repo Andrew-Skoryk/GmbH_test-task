@@ -1,15 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { store } from './app/lib/redux/store';
 
-export default function middleware(_request: NextRequest) {
+export default function middleware(request: NextRequest) {
   const state = store.getState();
+  const currentPath = request.nextUrl.pathname;
 
   if (!state.auth.isAuthenticated) {
-    return NextResponse.redirect('https://gmbh-test-task.vercel.app/');
+    if (currentPath !== "/") {
+      return NextResponse.redirect('https://gmbh-test-task.vercel.app/');
+    }
   } else {
-    return NextResponse.redirect('https://gmbh-test-task.vercel.app/table');
+    if (currentPath !== "/table") {
+      return NextResponse.redirect('https://gmbh-test-task.vercel.app/table');
+    }
   }
 
+  return NextResponse.next();
 }
 
 export const config = {

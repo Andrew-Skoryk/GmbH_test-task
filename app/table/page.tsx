@@ -2,9 +2,9 @@ import DataFetcher from "../components/DataFetcher";
 
 function TablePage() {
   return (
-    <div>
+    <main className="p-6">
       <DataFetcher />
-    </div>
+    </main>
   );
 }
 
